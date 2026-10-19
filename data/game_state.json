@@ -1,0 +1,39 @@
+{
+  "week": 3,
+  "alive": [
+    "juju",
+    "tom",
+    "skye",
+    "amelia",
+    "lucas"
+  ],
+  "eliminated": [
+    {
+      "name": "isaac",
+      "day": 7,
+      "votes": 6
+    },
+    {
+      "name": "rocio",
+      "day": 14,
+      "votes": 5
+    }
+  ],
+  "investigations_this_week": {
+    "skye": true,
+    "lucas": true
+  },
+  "investigation_notices": [
+    "amelia"
+  ],
+  "has_acted_visibly": {
+    "juju": true,
+    "tom": true,
+    "skye": true,
+    "amelia": true,
+    "lucas": true,
+    "isaac": true,
+    "rocio": true
+  },
+  "game_over": false
+}

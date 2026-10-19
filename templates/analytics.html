@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — LLM Life Simulation</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Life Sim</a>
+    <a href="/">Home</a>
+    <a href="/board">Board</a>
+    <a href="/analytics">Analytics</a>
+  </nav>
+
+  <div class="container">
+    <h1>Analytics</h1>
+
+    <div class="status-grid" id="stats">
+      <div class="status-item">
+        <div class="label">Total Days</div>
+        <div class="value" id="total-days">--</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Meetings Held</div>
+        <div class="value" id="total-meetings">--</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Board Posts</div>
+        <div class="value" id="total-posts">--</div>
+      </div>
+    </div>
+
+    <h2>Agent Journal Sizes</h2>
+    <div class="card">
+      <div id="journal-bars"></div>
+    </div>
+
+    <h2>Day Log</h2>
+    <ul class="day-list" id="full-day-list">
+      <li class="loading">Loading...</li>
+    </ul>
+  </div>
+
+  <script>
+    function escapeHtml(t) {
+      return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function load() {
+      const [status, days, board] = await Promise.all([
+        (await fetch('/api/status')).json(),
+        (await fetch('/api/days')).json(),
+        (await fetch('/api/board')).json(),
+      ]);
+
+      document.getElementById('total-days').textContent = status.day;
+      const meetings = days.filter(d => d.is_meeting).length;
+      document.getElementById('total-meetings').textContent = meetings;
+      document.getElementById('total-posts').textContent = (board.posts || []).length;
+
+      // Journal bars
+      const bars = document.getElementById('journal-bars');
+      bars.innerHTML = '';
+      const maxTokens = Math.max(...status.agents.map(a => a.journal_tokens), 1);
+      status.agents.forEach(a => {
+        const pct = Math.round((a.journal_tokens / 1000) * 100);
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex; align-items:center; gap:12px; margin-bottom:8px;';
+        div.innerHTML = `
+          <span style="min-width:60px; color:var(--accent-purple); font-weight:700;">
+            ${a.name.charAt(0).toUpperCase() + a.name.slice(1)}
+          </span>
+          <div style="flex:1; background:var(--bg-tertiary); border-radius:4px; height:20px; overflow:hidden;">
+            <div style="width:${Math.min(pct,100)}%; height:100%; background:var(--accent-cyan); border-radius:4px;"></div>
+          </div>
+          <span style="min-width:80px; color:var(--text-secondary); font-size:0.85em; text-align:right;">
+            ${a.journal_tokens} / 1000
+          </span>`;
+        bars.appendChild(div);
+      });
+
+      // Full day list
+      const list = document.getElementById('full-day-list');
+      list.innerHTML = '';
+      if (days.length === 0) {
+        list.innerHTML = '<li style="color:var(--text-secondary);">No days logged yet.</li>';
+        return;
+      }
+      days.slice().reverse().forEach(d => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <a class="day-number" href="/day/${d.day}">Day ${d.day}</a>
+          ${d.is_meeting ? '<span class="meeting-badge">Meeting</span>' : ''}
+          <span class="day-summary">${escapeHtml(d.summary || '')}</span>`;
+        list.appendChild(li);
+      });
+    }
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Life Simulation</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Life Sim</a>
+    <a href="/">Home</a>
+    <a href="/board">Board</a>
+    <a href="/analytics">Analytics</a>
+  </nav>
+
+  <div class="container">
+    <h1>LLM Life Simulation</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 24px;">
+      7 LLM agents living their own lives through letters, a bulletin board, and weekly meetings.
+    </p>
+
+    <div class="status-grid" id="status-grid">
+      <div class="status-item">
+        <div class="label">Current Day</div>
+        <div class="value" id="stat-day">--</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Agents</div>
+        <div class="value">7</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Days Logged</div>
+        <div class="value" id="stat-logged">--</div>
+      </div>
+    </div>
+
+    <h2>Agents</h2>
+    <div class="agent-grid" id="agent-grid">
+      <div class="loading">Loading...</div>
+    </div>
+
+    <h2 style="margin-top: 24px;">Recent Days</h2>
+    <ul class="day-list" id="day-list">
+      <li class="loading">Loading...</li>
+    </ul>
+  </div>
+
+  <script>
+    async function load() {
+      try {
+        const status = await (await fetch('/api/status')).json();
+        document.getElementById('stat-day').textContent = status.day;
+
+        const grid = document.getElementById('agent-grid');
+        grid.innerHTML = '';
+        status.agents.forEach(a => {
+          const card = document.createElement('a');
+          card.className = 'agent-card';
+          card.href = '/agent/' + a.name;
+          card.innerHTML = `<div class="name">${a.name.charAt(0).toUpperCase() + a.name.slice(1)}</div>
+                           <div class="meta">Journal: ${a.journal_tokens} tokens</div>`;
+          grid.appendChild(card);
+        });
+      } catch(e) {
+        document.getElementById('agent-grid').innerHTML = '<p>Error loading agents.</p>';
+      }
+
+      try {
+        const days = await (await fetch('/api/days')).json();
+        document.getElementById('stat-logged').textContent = days.length;
+        const list = document.getElementById('day-list');
+        list.innerHTML = '';
+        if (days.length === 0) {
+          list.innerHTML = '<li style="color: var(--text-secondary)">No days logged yet. Run: python main.py</li>';
+          return;
+        }
+        days.slice().reverse().slice(0, 20).forEach(d => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a class="day-number" href="/day/${d.day}">Day ${d.day}</a>
+            ${d.is_meeting ? '<span class="meeting-badge">Meeting</span>' : ''}
+            <span class="day-summary">${escapeHtml(d.summary || '')}</span>`;
+          list.appendChild(li);
+        });
+      } catch(e) {
+        document.getElementById('day-list').innerHTML = '<li>Error loading days.</li>';
+      }
+    }
+
+    function escapeHtml(t) {
+      return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    load();
+  </script>
+</body>
+</html>

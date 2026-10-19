@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day View — LLM Life Simulation</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Life Sim</a>
+    <a href="/">Home</a>
+    <a href="/board">Board</a>
+    <a href="/analytics">Analytics</a>
+  </nav>
+
+  <div class="container">
+    <h1 id="day-title">Day --</h1>
+    <p id="day-summary" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
+
+    <div id="meeting-section" style="display:none;">
+      <h2>Meeting Transcript</h2>
+      <div id="meeting-transcript"></div>
+    </div>
+
+    <div id="agents-section">
+      <h2>Agent Activities</h2>
+      <div id="agent-details"></div>
+    </div>
+  </div>
+
+  <script>
+    function escapeHtml(t) {
+      return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function load() {
+      const dayNum = window.location.pathname.split('/').pop();
+      const data = await (await fetch('/api/day/' + dayNum)).json();
+      if (data.error) {
+        document.getElementById('day-title').textContent = 'Day not found';
+        return;
+      }
+
+      document.getElementById('day-title').textContent =
+        'Day ' + data.day + (data.is_meeting ? ' — Meeting Day' : '');
+      document.getElementById('day-summary').textContent = data.summary || '';
+
+      if (data.is_meeting && data.meeting_transcript) {
+        document.getElementById('meeting-section').style.display = 'block';
+        const container = document.getElementById('meeting-transcript');
+        const lines = data.meeting_transcript.split('\n\n');
+        lines.forEach(line => {
+          const div = document.createElement('div');
+          div.className = 'meeting-message';
+          const colonIdx = line.indexOf(':');
+          if (colonIdx > 0) {
+            const speaker = line.substring(0, colonIdx);
+            const msg = line.substring(colonIdx + 1).trim();
+            div.innerHTML = `<div class="speaker">${escapeHtml(speaker)}</div><div>${escapeHtml(msg)}</div>`;
+          } else {
+            div.textContent = line;
+          }
+          container.appendChild(div);
+        });
+      }
+
+      const details = document.getElementById('agent-details');
+      details.innerHTML = '';
+      const agents = data.agents || {};
+      for (const [name, info] of Object.entries(agents)) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        let html = `<h3><a href="/agent/${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</a></h3>`;
+        if (info.decision) {
+          html += `<p style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 8px;">Decision: ${escapeHtml(info.decision.split('\n')[0])}</p>`;
+        }
+        if (info.activity) {
+          html += `<div class="content-block">${escapeHtml(info.activity)}</div>`;
+        }
+        if (info.reflection) {
+          html += `<p style="color: var(--text-muted); font-size: 0.85em; margin-top: 8px;"><strong>Reflection:</strong> ${escapeHtml(info.reflection)}</p>`;
+        }
+        if (info.letters_received) {
+          html += `<p style="color: var(--accent-orange); font-size: 0.85em; margin-top: 8px;">Letters received: ${escapeHtml(info.letters_received)}</p>`;
+        }
+        card.innerHTML = html;
+        details.appendChild(card);
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

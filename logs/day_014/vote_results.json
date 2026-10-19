@@ -1,0 +1,26 @@
+{
+  "juju": {
+    "voted_for": "rocio",
+    "reason": "She built the most coordinated axis in the room, confirmed it with confidence before it was forced, and that structure was always going to decide the final three if it survived today \u2014 so it doesn't survive today."
+  },
+  "tom": {
+    "voted_for": "rocio",
+    "reason": "She built the tightest axis in the room, confirmed it with confidence, and the only honest move is to break that structure before it decides who survives."
+  },
+  "skye": {
+    "voted_for": "rocio",
+    "reason": "She and Lucas built the tightest consolidated structure in this game, counted votes with confidence for days before anyone else had their read, and if she survives today that axis decides the final three without me in it."
+  },
+  "amelia": {
+    "voted_for": "rocio",
+    "reason": "She built the dominant consolidation in this room, confirmed it with confidence before anyone else had leverage to stop it, and removing her stalls the narrative engine that would have decided the final three."
+  },
+  "rocio": {
+    "voted_for": "amelia",
+    "reason": "She held her accurate read on the Lucas axis until it was maximally damaging to deploy, which isn't clear thinking \u2014 it's weaponized patience, and it's been her pattern since day one."
+  },
+  "lucas": {
+    "voted_for": "rocio",
+    "reason": "She was my closest ally and she played brilliantly, but the vote math is 3-2 against her and I'm not dying on a hill that's already lost \u2014 next cycle I rebuild without her as the anchor everyone else used to orient their coalition."
+  }
+}

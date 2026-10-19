@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent — LLM Life Simulation</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Life Sim</a>
+    <a href="/">Home</a>
+    <a href="/board">Board</a>
+    <a href="/analytics">Analytics</a>
+  </nav>
+
+  <div class="container">
+    <h1 id="agent-name">Agent</h1>
+    <p id="agent-meta" style="color: var(--text-secondary); margin-bottom: 24px;"></p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('journal')">Journal</button>
+      <button class="tab" onclick="showTab('history')">History</button>
+    </div>
+
+    <div id="tab-journal" class="tab-content active">
+      <div class="journal-content" id="journal-content">Loading...</div>
+    </div>
+
+    <div id="tab-history" class="tab-content">
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <script>
+    function escapeHtml(t) {
+      return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function showTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    async function load() {
+      const name = window.location.pathname.split('/').pop();
+      const data = await (await fetch('/api/agent/' + name)).json();
+      if (data.error) {
+        document.getElementById('agent-name').textContent = 'Agent not found';
+        return;
+      }
+
+      document.getElementById('agent-name').textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+      document.getElementById('agent-meta').textContent = `Journal: ${data.journal_tokens} tokens`;
+      document.getElementById('journal-content').textContent = data.journal || '[Empty journal]';
+
+      const historyEl = document.getElementById('history-list');
+      historyEl.innerHTML = '';
+      if (!data.history || data.history.length === 0) {
+        historyEl.innerHTML = '<p style="color: var(--text-secondary);">No history yet.</p>';
+        return;
+      }
+      data.history.slice().reverse().forEach(entry => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        let html = `<h3>Day ${entry.day}</h3>`;
+        if (entry.decision) {
+          html += `<p style="font-size:0.85em; color:var(--text-secondary);">${escapeHtml(entry.decision.split('\n')[0])}</p>`;
+        }
+        if (entry.activity) {
+          html += `<div class="content-block">${escapeHtml(entry.activity)}</div>`;
+        }
+        if (entry.reflection) {
+          html += `<p style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">${escapeHtml(entry.reflection)}</p>`;
+        }
+        card.innerHTML = html;
+        historyEl.appendChild(card);
+      });
+    }
+    load();
+  </script>
+</body>
+</html>

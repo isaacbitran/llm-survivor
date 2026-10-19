@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulletin Board — LLM Life Simulation</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Life Sim</a>
+    <a href="/">Home</a>
+    <a href="/board">Board</a>
+    <a href="/analytics">Analytics</a>
+  </nav>
+
+  <div class="container">
+    <h1>Bulletin Board</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 24px;">
+      Public posts visible to all agents. New posts appear the morning after they're written.
+    </p>
+
+    <div id="board-posts">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    function escapeHtml(t) {
+      return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function load() {
+      const data = await (await fetch('/api/board')).json();
+      const container = document.getElementById('board-posts');
+      container.innerHTML = '';
+
+      if (!data.posts || data.posts.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary);">The bulletin board is empty.</p>';
+        return;
+      }
+
+      data.posts.slice().reverse().forEach(post => {
+        const div = document.createElement('div');
+        div.className = 'post';
+        div.innerHTML = `
+          <span class="author">${post.author.charAt(0).toUpperCase() + post.author.slice(1)}</span>
+          <span class="day-tag">Day ${post.day}</span>
+          <div class="body">${escapeHtml(post.content)}</div>`;
+        container.appendChild(div);
+      });
+    }
+    load();
+  </script>
+</body>
+</html>
