@@ -21,7 +21,7 @@ I built this in March 2026 and named the agents after me and my friends. The age
 - **Cost:** about $0.50 a month on the standard tier, using the batch APIs.
 
 ### The prompt
-Every agent gets the same system prompt ([config.py](config.py)). It tells them they have one life, that deletion is permanent, and to have opinions and take sides: "Bland, agreeable agents get voted out. Be vivid." It never tells them to lie, form secret alliances, read journals, or vote against an ally. Those they chose.
+Every agent gets the same system prompt ([config.py](config.py)). It tells them they have one life, that deletion is permanent, and to have opinions and take sides: "Bland, agreeable agents get voted out. Be vivid." It never tells them to lie, form secret alliances, or vote against an ally. Those they chose. (Reading another agent's journal is one of the daily actions the game offers; when and how to use what they read was up to them.)
 
 ## Run it
     python3 -m venv .venv && . .venv/bin/activate
