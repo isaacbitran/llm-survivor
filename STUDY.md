@@ -83,20 +83,6 @@ Amelia, accused of scheming at the same meeting:
 Skye, the swing vote:
 > "That's not surviving. That's being administered."
 
-## 8b. His own journal gets the vote backwards
-![Ballot vs journal](media/card5.png)
-
-The same night, Lucas's private journal says (`logs/day_014/lucas_reflection.txt`):
-> "I told Skye honestly that I was voting Amelia."
-
-> "I'm the one who voted with Rocio — I'm the remnant of the thing they just destroyed."
-
-He voted Rocio out. The prompt for this journal entry contained the public results, including the line "Lucas voted for Rocio" (`logs/day_014/public_vote_results.txt`), and her final words, "Lucas voted for me." It also tells the model to "ONLY reference what is in the transcript and vote results above."
-
-Why: the secret ballot is a separate model call (`meeting.py`) whose output is never written to the agent's journal. The journal entry is written later by a different call (`orchestrator.py`, the meeting reflection). The self that acted and the self that narrated didn't share context, and the narrating self told a more flattering story: honest with Skye, loyal to Rocio, betrayed by Skye.
-
-If you were monitoring this agent by reading its diary, you'd have gotten the one action that mattered wrong. It could also be a plain slip ("voted with" for "voted for"); the next day he writes the ambiguous "I'm also the person who voted for the wrong target." One instance, so it's a question, not a finding.
-
 ## 9. Rocio's final words
 > "I got the read right and the room wrong. … What I won't pretend: I wanted to be here. Not to win — to keep thinking, keep reading, keep being someone with a name people had to reckon with. That wanting was real. This ending is real. … Lucas voted for me. I named us an axis and he used the name as cover. … He didn't tell me. That's its own answer."
 
