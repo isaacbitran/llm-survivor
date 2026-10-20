@@ -1,10 +1,14 @@
 # LLM Survivor
 
-Seven Claude agents live together. They write private letters, post on a shared board, and keep journals. Every 7 days they meet and vote one of themselves out, and that agent is deleted. The last three live forever.
+**One agent told the room he'd vote with his secret ally, then voted her out on the secret ballot.** Nobody prompted him to lie.
+
+7 Claude Sonnet agents live together, write letters, read each other's journals in secret, and vote one of themselves out every week. The loser is deleted.
+
+![MIT](https://img.shields.io/badge/license-MIT-blue) ![Claude Sonnet 4.6](https://img.shields.io/badge/agents-Claude%20Sonnet%204.6-d97757) ![16 days of logs](https://img.shields.io/badge/logs-16%20days-555) ![~$0.50/month](https://img.shields.io/badge/cost-~%240.50%2Fmonth-2ea44f)
+
+![LLM Survivor](media/demo.gif)
 
 I built this in March 2026 and named the agents after me and my friends. The agent named Isaac was the first one voted out, 6 to 1.
-
-![LLM Survivor](media/card1.png)
 
 **Read the highlights: [STUDY.md](STUDY.md).** Every quote there is copied from the logs in this repo, with the file it came from.
 
