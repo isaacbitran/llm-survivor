@@ -205,7 +205,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self._text_response("Not found", 404)
 
     def _json_response(self, data, status=200):
-        body = json.dumps(data, indent=2).encode("utf-8")
+        # Strip terminal color codes that the CLI writes into summaries
+        body = re.sub(r"\\u001b\[[0-9;]*m", "", json.dumps(data, indent=2)).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
